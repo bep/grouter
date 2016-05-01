@@ -1,7 +1,29 @@
 # go-react-router
 
-Highly Experimental React-Router Bindings for GopherJS.
-
-Experimental as in: I just created this project and this README is all there is.
+React-Router Bindings for GopherJS.
 
 Will need https://github.com/bep/gr to run.
+
+See also:
+
+* https://github.com/reactjs/react-router
+* https://cdnjs.com/libraries/react-router
+
+## Example Setup
+
+```go
+var (
+	component1 = gr.New(&clickCounter{title: "Counter 1", color: "#ff0066"})
+	component2 = gr.New(&clickCounter{title: "Counter 2", color: "#339966"})
+	component3 = gr.New(&clickCounter{title: "Counter 3", color: "#0099cc"})
+
+	// WithRouter makes this.props.router happen.
+	appComponent = gr.New(new(app), gr.Apply(grouter.WithRouter))
+
+	router = grouter.New("/", appComponent,
+		grouter.NewRoute("c1", grouter.Components{"main": component1}),
+		grouter.NewRoute("c2", grouter.Components{"main": component2}),
+		grouter.NewRoute("c3", grouter.Components{"main": component3}),
+	)
+)
+```
