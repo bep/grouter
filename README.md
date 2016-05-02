@@ -4,6 +4,8 @@ React-Router Bindings for GopherJS.
 
 Will need https://github.com/bep/gr to run.
 
+See it in action here: [http://bego.io/goreact/examples/router/](http://bego.io/goreact/examples/router/)
+
 See also:
 
 * https://github.com/reactjs/react-router
