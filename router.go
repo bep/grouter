@@ -32,6 +32,15 @@ func NewRoute(path string, components Components, children ...Route) Route {
 	return Route{path: path, components: components, children: children}
 }
 
+// NewIndexRoute defines the route used when the user visits "/".
+// See https://github.com/reactjs/react-router/blob/master/docs/guides/IndexRoutes.md
+func NewIndexRoute(components Components) Route {
+	// For now the index route is defined as a route without path.
+	// This should be made more robust.
+	// TODO(bep)
+	return Route{components: components}
+}
+
 // New creates a new Router with the given root path and component and
 // the supplied child routes.
 func New(path string, c gr.Component, children ...Route) *Router {
@@ -70,7 +79,9 @@ func extractDescendants(children []Route) *js.Object {
 	for i, c := range children {
 		props := js.Global.Get("Object").New()
 		props.Set("key", i)
-		props.Set("path", c.path)
+		if c.path != "" {
+			props.Set("path", c.path)
+		}
 
 		comps := js.Global.Get("Object").New()
 
@@ -86,7 +97,14 @@ func extractDescendants(children []Route) *js.Object {
 			// Recurse
 			descendants = extractDescendants(c.children)
 		}
-		childElements.SetIndex(i, routeFactory.Invoke(props, descendants))
+
+		factory := routeFactory
+
+		if c.path == "" {
+			factory = indexRouteFactory
+		}
+
+		childElements.SetIndex(i, factory.Invoke(props, descendants))
 	}
 
 	return childElements
@@ -136,13 +154,14 @@ func getRouterFunc(props gr.Props, funcName string) func(...interface{}) *js.Obj
 }
 
 var (
-	react         *js.Object
-	reactRouter   *js.Object
-	routeFactory  *js.Object
-	routerFactory *js.Object
-	linkFactory   *js.Object
-	hashHistory   *js.Object
-	withRouter    *js.Object
+	react             *js.Object
+	reactRouter       *js.Object
+	routeFactory      *js.Object
+	indexRouteFactory *js.Object
+	routerFactory     *js.Object
+	linkFactory       *js.Object
+	hashHistory       *js.Object
+	withRouter        *js.Object
 )
 
 func init() {
@@ -163,6 +182,12 @@ func init() {
 
 	if routeFactory == js.Undefined {
 		panic("ReactRouter.Route not found.")
+	}
+
+	indexRouteFactory = react.Call("createFactory", reactRouter.Get("IndexRoute"))
+
+	if indexRouteFactory == js.Undefined {
+		panic("ReactRouter.IndexRoute not found.")
 	}
 
 	routerFactory = react.Call("createFactory", reactRouter.Get("Router"))

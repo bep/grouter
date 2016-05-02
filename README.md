@@ -15,17 +15,19 @@ See also:
 
 ```go
 var (
-	component1 = gr.New(&clickCounter{title: "Counter 1", color: "#ff0066"})
-	component2 = gr.New(&clickCounter{title: "Counter 2", color: "#339966"})
-	component3 = gr.New(&clickCounter{title: "Counter 3", color: "#0099cc"})
+	component1   = gr.New(&clickCounter{title: "Counter 1", color: "#ff0066"})
+	component2   = gr.New(&clickCounter{title: "Counter 2", color: "#339966"})
+	component3   = gr.New(&clickCounter{title: "Counter 3", color: "#0099cc"})
+	component3_2 = gr.New(&clickCounter{title: "Counter 3_2", color: "#ffcc66"})
 
 	// WithRouter makes this.props.router happen.
 	appComponent = gr.New(new(app), gr.Apply(grouter.WithRouter))
 
 	router = grouter.New("/", appComponent,
+		grouter.NewIndexRoute(grouter.Components{"main": component1}),
 		grouter.NewRoute("c1", grouter.Components{"main": component1}),
 		grouter.NewRoute("c2", grouter.Components{"main": component2}),
-		grouter.NewRoute("c3", grouter.Components{"main": component3}),
+		grouter.NewRoute("c3", grouter.Components{"main": component3, "sub": component3_2}),
 	)
 )
 ```
