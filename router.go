@@ -1,5 +1,4 @@
 // Package grouter implements GopherJS bindings for react-router.
-
 package grouter
 
 import (
@@ -7,11 +6,13 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
+// Router is the top level component.
 type Router struct {
-	element *gr.Element
-	root    Route
+	root Route
 }
 
+// A route is defined by a path and one or more components. Components can be
+// named. Routes can be nested..
 type Route struct {
 	path string
 
@@ -22,19 +23,25 @@ type Route struct {
 	children []Route
 }
 
+// Components represents named components for a route.
 type Components map[string]gr.Component
 
+// NewRoute creates a new Route with the given path and named components and
+// the supplied child routes.
 func NewRoute(path string, components Components, children ...Route) Route {
 	return Route{path: path, components: components, children: children}
 }
 
+// New creates a new Router with the given root path and component and
+// the supplied child routes.
 func New(path string, c gr.Component, children ...Route) *Router {
 	root := Route{path: path, component: c, children: children}
 	return &Router{root: root}
 }
 
+// Node creates a new React JS component of the Router defintion.
 func (r *Router) Node() *js.Object {
-
+	// TODO(bep) this can probably be cached
 	routerProps := make(map[string]interface{})
 	routerProps["history"] = hashHistory
 
@@ -86,24 +93,29 @@ func extractDescendants(children []Route) *js.Object {
 
 }
 
+// Link creates a HTML anchor to the given path with the given text.
 func Link(to, text string) gr.Modifier {
 	p := gr.Props{"to": to, "activeClassName": "active"}
 	n := linkFactory.Invoke(p, text)
 	return gr.NewPreparedElement(n)
 }
 
+// IsActive returns whether the path or location is active.
 func IsActive(props gr.Props, pathOrLoc string) bool {
 	return getRouterFunc(props, "isActive")(pathOrLoc).Bool()
 }
 
+// MarkIfActive marks by the active CSS class if the given path or location
+// is active or not. If not active, a modifier that does nothing is returned.
 func MarkIfActive(props gr.Props, pathOrLoc string) gr.Modifier {
-	var m gr.Modifier = gr.Discard
 	if IsActive(props, pathOrLoc) {
 		return gr.CSS("active")
 	}
-	return m
+	return gr.Discard
 }
 
+// WithRouter must be applied to the React component to get hold of the
+// router object needed by MarkIfActive and friends.
 func WithRouter(o *js.Object) *js.Object {
 	return withRouter.Invoke(o)
 }
