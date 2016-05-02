@@ -1,5 +1,8 @@
 # go-react-router
 
+[![GoDoc](https://godoc.org/github.com/bep/grouter?status.svg)](https://godoc.org/github.com/bep/grouter)
+
+
 React-Router Bindings for GopherJS.
 
 Will need https://github.com/bep/gr to run.
