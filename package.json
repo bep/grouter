@@ -1,0 +1,36 @@
+{
+  "name": "gr",
+  "version": "0.0.1",
+  "description": "GopherJS bindings for react-router",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "dependencies": {
+    "react": "^15.0.2",
+    "react-dom": "^15.0.2",
+    "react-router": "^2.4.0"
+  },
+  "devDependencies": {
+    "react-addons-test-utils": "^15.0.2",
+    "react-element-to-string": "^1.0.2",
+    "skin-deep": "git://github.com/glenjamin/skin-deep"
+  },
+  "scripts": {
+    "test": "gopherjs test github.com/bep/gr/tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bep/grouter.git"
+  },
+  "keywords": [
+    "GopherJS"
+  ],
+  "author": "Bjørn Erik Pedersen <bjorn.erik.pedersen@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bep/grouter/issues"
+  },
+  "homepage": "https://github.com/bep/grouter#README.md"
+}

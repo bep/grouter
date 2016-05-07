@@ -6,9 +6,21 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
-// Router is the top level component.
+var history *js.Object
+
+// Router represents a router.
 type Router struct {
 	root Route
+
+	history *js.Object
+}
+
+// History is a configuration option to set the history implementation to use.
+func History(history *js.Object) func(*Router) error {
+	return func(rc *Router) error {
+		rc.history = history
+		return nil
+	}
 }
 
 // A route is defined by a path and one or more components. Components can be
@@ -41,18 +53,33 @@ func NewIndexRoute(components Components) Route {
 	return Route{components: components}
 }
 
-// New creates a new Router with the given root path and component and
-// the supplied child routes.
-func New(path string, c gr.Component, children ...Route) *Router {
-	root := Route{path: path, component: c, children: children}
-	return &Router{root: root}
+// New creates a new Router with the given root path and component and options.
+func New(path string, c gr.Component, options ...func(*Router) error) *Router {
+	root := Route{path: path, component: c}
+	router := &Router{root: root}
+	router.history = defaultHistory
+
+	for _, opt := range options {
+		err := opt(router)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return router
+}
+
+// With creates a new Router with the provided children.
+func (r Router) With(routes ...Route) *Router {
+	r.root.children = routes
+	return &r
 }
 
 // Node creates a new React JS component of the Router defintion.
 func (r *Router) Node() *js.Object {
 	// TODO(bep) this can probably be cached
+	// TODO(bep) make annotated struct
 	routerProps := make(map[string]interface{})
-	routerProps["history"] = hashHistory
+	routerProps["history"] = r.history
 
 	rootProps := js.Global.Get("Object").New()
 
@@ -160,7 +187,7 @@ var (
 	indexRouteFactory *js.Object
 	routerFactory     *js.Object
 	linkFactory       *js.Object
-	hashHistory       *js.Object
+	defaultHistory    *js.Object
 	withRouter        *js.Object
 )
 
@@ -202,16 +229,12 @@ func init() {
 		panic("ReactRouter.Link not found.")
 	}
 
-	hashHistory = reactRouter.Get("hashHistory")
-
-	if hashHistory == js.Undefined {
-		panic("ReactRouter.hashHistory not found.")
-	}
-
 	withRouter = reactRouter.Get("withRouter")
 
 	if withRouter == js.Undefined {
 		panic("ReactRouter.withRouter not found.")
 	}
+
+	defaultHistory = reactRouter.Get("hashHistory")
 
 }
