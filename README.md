@@ -1,5 +1,6 @@
 # go-react-router
 
+[![Build Status](https://travis-ci.org/bep/grouter.svg)](https://travis-ci.org/bep/grouter)
 [![GoDoc](https://godoc.org/github.com/bep/grouter?status.svg)](https://godoc.org/github.com/bep/grouter)
 
 
