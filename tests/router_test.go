@@ -21,7 +21,7 @@ func TestRouter(t *testing.T) {
 	// WithRouter makes this.props.router happen.
 	appComponent := gr.New(new(testApp), gr.Apply(grouter.WithRouter))
 
-	routerConfig := grouter.New("/", appComponent, grouter.History(forPath("/c2")))
+	routerConfig := grouter.New("/", appComponent, grouter.WithHistory(forPath("/c2")))
 
 	router := routerConfig.With(
 		grouter.NewIndexRoute(grouter.Components{"main": c1}),
@@ -73,8 +73,8 @@ func (ra testComp) Render(this *gr.This) gr.Component {
 
 var createHistory *js.Object
 
-func forPath(path string) *js.Object {
-	return createHistory.Invoke(path)
+func forPath(path string) grouter.History {
+	return grouter.History{createHistory.Invoke(path)}
 }
 
 func init() {

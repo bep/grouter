@@ -6,17 +6,19 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
-var history *js.Object
-
 // Router represents a router.
 type Router struct {
 	root Route
 
-	history *js.Object
+	history History
 }
 
-// History is a configuration option to set the history implementation to use.
-func History(history *js.Object) func(*Router) error {
+type History struct {
+	*js.Object
+}
+
+// WithHistory is a configuration option to set the history implementation to use.
+func WithHistory(history History) func(*Router) error {
 	return func(rc *Router) error {
 		rc.history = history
 		return nil
@@ -187,7 +189,7 @@ var (
 	indexRouteFactory *js.Object
 	routerFactory     *js.Object
 	linkFactory       *js.Object
-	defaultHistory    *js.Object
+	defaultHistory    History
 	withRouter        *js.Object
 )
 
@@ -235,6 +237,6 @@ func init() {
 		panic("ReactRouter.withRouter not found.")
 	}
 
-	defaultHistory = reactRouter.Get("hashHistory")
+	defaultHistory = History{Object: reactRouter.Get("hashHistory")}
 
 }
