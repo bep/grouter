@@ -23,7 +23,7 @@ func TestRouter(t *testing.T) {
 
 	routerConfig := grouter.New("/", appComponent, grouter.History(forPath("/c2")))
 
-	router := routerConfig.WithRoutes(
+	router := routerConfig.With(
 		grouter.NewIndexRoute(grouter.Components{"main": c1}),
 		grouter.NewRoute("c1", grouter.Components{"main": c1}),
 		grouter.NewRoute("c2", grouter.Components{"main": c2, "sub": c2Sub}),
