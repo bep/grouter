@@ -8,6 +8,8 @@ import (
 
 // Router represents a router.
 type Router struct {
+	*js.Object
+
 	root Route
 
 	history History
@@ -67,18 +69,26 @@ func New(path string, c gr.Component, options ...func(*Router) error) *Router {
 			panic(err)
 		}
 	}
+
 	return router
 }
 
 // With creates a new Router with the provided children.
 func (r Router) With(routes ...Route) *Router {
+	r.Object = nil
 	r.root.children = routes
 	return &r
 }
 
 // Node creates a new React JS component of the Router defintion.
 func (r *Router) Node() *js.Object {
-	// TODO(bep) this can probably be cached
+	if r.Object == nil {
+		r.initObject()
+	}
+	return r.Object
+}
+
+func (r *Router) initObject() {
 	// TODO(bep) make annotated struct
 	routerProps := make(map[string]interface{})
 	routerProps["history"] = r.history
@@ -99,7 +109,7 @@ func (r *Router) Node() *js.Object {
 		panic("Failed to create routes")
 	}
 
-	return router
+	r.Object = router
 }
 
 func extractDescendants(children []Route) *js.Object {
