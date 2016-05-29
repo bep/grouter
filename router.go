@@ -3,6 +3,7 @@ package grouter
 
 import (
 	"github.com/bep/gr"
+	"github.com/bep/gr/support"
 	"github.com/gopherjs/gopherjs/js"
 )
 
@@ -205,15 +206,22 @@ var (
 func init() {
 
 	react := js.Global.Get("React")
+	var err error
 
 	if react == js.Undefined {
-		panic("Facebook React not found, make sure it is loaded.")
+		// Fallback to Require
+		if react, err = support.Require("react"); err != nil {
+			panic("Facebook React not found, make sure it is loaded.")
+		}
 	}
 
 	reactRouter = js.Global.Get("ReactRouter")
 
 	if reactRouter == js.Undefined {
-		panic("Make sure that react-router is loaded, see https://github.com/reactjs/react-router")
+		// Fallback to Require
+		if react, err = support.Require("react-router"); err != nil {
+			panic("Make sure that react-router is loaded, see https://github.com/reactjs/react-router")
+		}
 	}
 
 	routeFactory = react.Call("createFactory", reactRouter.Get("Route"))
