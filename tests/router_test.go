@@ -41,25 +41,27 @@ func TestRouter(t *testing.T) {
 	grt.Equal(t, loc["pathname"], "/c2")
 }
 
-type testApp int
+type testApp struct {
+	*gr.This
+}
 
 // Implements the Renderer interface.
-func (a testApp) Render(this *gr.This) gr.Component {
+func (a testApp) Render() gr.Component {
 	return el.Div(
 		el.UnorderedList(
-			createLinkListItem(this, "/c1", "C #1"),
-			createLinkListItem(this, "/c2", "C #2"),
+			a.createLinkListItem("/c1", "C #1"),
+			a.createLinkListItem("/c2", "C #2"),
 		),
 		// Receives the component in this.props.<name>
 		// If none found, a no-op is returned.
-		this.Component("main"),
-		this.Component("sub"),
+		a.Component("main"),
+		a.Component("sub"),
 	)
 }
 
-func createLinkListItem(this *gr.This, path, title string) gr.Modifier {
+func (a testApp) createLinkListItem(path, title string) gr.Modifier {
 	return el.ListItem(
-		grouter.MarkIfActive(this.Props(), path),
+		grouter.MarkIfActive(a.Props(), path),
 		grouter.Link(path, title))
 }
 
@@ -67,7 +69,7 @@ type testComp struct {
 	name string
 }
 
-func (ra testComp) Render(this *gr.This) gr.Component {
+func (ra testComp) Render() gr.Component {
 	return el.Div(gr.Text(ra.name))
 }
 
