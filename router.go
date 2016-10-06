@@ -16,6 +16,7 @@ type Router struct {
 	history History
 }
 
+// History for the Router.
 type History struct {
 	*js.Object
 }
@@ -28,7 +29,7 @@ func WithHistory(history History) func(*Router) error {
 	}
 }
 
-// A route is defined by a path and one or more components. Components can be
+// A Route is defined by a path and one or more components. Components can be
 // named. Routes can be nested..
 type Route struct {
 	path string
@@ -179,13 +180,13 @@ func WithRouter(o *js.Object) *js.Object {
 }
 
 func getRouterFunc(props gr.Props, funcName string) func(...interface{}) *js.Object {
-	if r, ok := props["router"]; ok && r != js.Undefined {
+	if r := props.Interface("router"); r != nil {
 		router := r.(map[string]interface{})
 		if fi, ok := router[funcName]; ok {
 			return fi.(func(...interface{}) *js.Object)
-		} else {
-			panic(funcName + " not found")
 		}
+		panic(funcName + " not found")
+
 	}
 
 	panic("router not found in props, make sure to decorate your component with WithRouter.")

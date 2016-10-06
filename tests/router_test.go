@@ -46,7 +46,7 @@ type testApp struct {
 }
 
 // Implements the Renderer interface.
-func (a testApp) Render() gr.Component {
+func (a testApp) Render(this *gr.This) gr.Component {
 	return el.Div(
 		el.UnorderedList(
 			a.createLinkListItem("/c1", "C #1"),
@@ -69,7 +69,7 @@ type testComp struct {
 	name string
 }
 
-func (ra testComp) Render() gr.Component {
+func (ra testComp) Render(this *gr.This) gr.Component {
 	return el.Div(gr.Text(ra.name))
 }
 
