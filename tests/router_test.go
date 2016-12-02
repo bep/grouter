@@ -35,10 +35,10 @@ func TestRouter(t *testing.T) {
 	r := grt.ShallowRender(elem)
 	routerContext := r.Dive("Router")
 
-	loc := routerContext.Props["location"].(map[string]interface{})
+	loc := routerContext.Props.Get("location")
 
 	// TODO(bep) ... can do better.
-	grt.Equal(t, loc["pathname"], "/c2")
+	grt.Equal(t, loc.Get("pathname").String(), "/c2")
 }
 
 type testApp struct {
@@ -46,7 +46,7 @@ type testApp struct {
 }
 
 // Implements the Renderer interface.
-func (a testApp) Render(this *gr.This) gr.Component {
+func (a testApp) Render() gr.Component {
 	return el.Div(
 		el.UnorderedList(
 			a.createLinkListItem("/c1", "C #1"),
@@ -69,7 +69,7 @@ type testComp struct {
 	name string
 }
 
-func (ra testComp) Render(this *gr.This) gr.Component {
+func (ra testComp) Render() gr.Component {
 	return el.Div(gr.Text(ra.name))
 }
 
